@@ -1,0 +1,57 @@
+# services:
+#   server:
+#     build: ./server
+#     container_name: shopper_back
+#     ports:
+#       - "8080:8080"
+#     networks:
+#       - app-network
+#     environment:
+#       - GOOGLE_API_KEY=${GOOGLE_API_KEY} # A variável principal, obrigatória
+#       - DATABASE_URL=file:./dev.db       
+#       - PORT=8080                        
+
+#   client:
+#     build:
+#       context: ./client
+#     container_name: shoper_front
+#     ports:
+#       - "80:80"
+#     networks:
+#       - app-network
+#     environment:
+#       - VITE_API_URL=http://shopper_back:8080  # URL fixa do backend no Docker
+#       - VITE_GOOGLE_API_KEY=${GOOGLE_API_KEY} # Mapeia a chave de API para o frontend
+
+# networks:
+#   app-network:
+
+services:
+  server:
+    build: ./server
+    container_name: shopper_back
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+    environment:
+      - GOOGLE_API_KEY=${GOOGLE_API_KEY} # A variável principal, obrigatória
+      - DATABASE_URL=file:./dev.db
+      - PORT=8080
+
+  client:
+    build:
+      context: ./client
+      args:
+        VITE_GOOGLE_API_KEY: ${GOOGLE_API_KEY} # Passa a chave para o ARG no Dockerfile
+    container_name: shoper_front
+    ports:
+      - "80:80"
+    networks:
+      - app-network
+    environment:
+      - VITE_API_URL=http://shopper_back:8080 # URL fixa do backend no Docker
+
+networks:
+  app-network:
+    driver: bridge
